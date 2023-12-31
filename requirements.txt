@@ -1,0 +1,87 @@
+In summary, the provided code creates two VPCs, a VPC peering connection between them, and instances in each VPC. The application instance is launched in the public subnet of the requester VPC. The database instances are launched in the public and private subnets of the accepter VPC. The public bastion host is launched in the public subnet of the accepter VPC and the private database instance is accessible only from the bastion host.
+
+Please copy the above code blocks in each instruction and paste it in the main.tf file and save it.
+If you have followed with the above instructions, you have created your own terraform code. Now you can skip the Using our pre-written terraform code section and move to the next section Deploying the infrastructure
+Let's verify the VPC Peering connectivity between the VPCs.
+
+To verify the deployment, we will use the following steps:
+
+Let's modify the application.pem file permissions.
+chmod 400 /root/advanced-vpc/vpc-peering/application.pemCopy
+SSH to the application server using the Application_Public_IP from the output.
+ssh -i /root/advanced-vpc/vpc-peering/application.pem ubuntu@Application_Public_IPCopy
+Type yes if prompted to continue connecting. Example: ssh -i /root/advanced-vpc/vpc-peering/application.pem ubuntu@34.221.153.174 You will be logged in to the application server.
+
+ping the database server using the Database_Private_IP from the output.
+ping Database_Private_IPCopy
+Example ping 10.1.1.8
+
+You should see the following output:
+PING with data transferCopy
+You will notice real data here
+
+Click ctrl + c to exit the ping command.
+
+VPC Peering Connectivity is working as expected.
+
+Open a new Terminal
+Let's perform the operations on database server using bastion host.
+
+Let's login to the bastion host using the Bastion_host_IP from the output.
+
+ssh -i /root/advanced-vpc/vpc-peering/application.pem ubuntu@Bastion_host_IPCopy
+Type yes if prompted to continue connecting.
+
+Example: ssh -i /root/advanced-vpc/vpc-peering/application.pem ubuntu@52.42.34.115 You will be logged in to the bastion host.
+
+ping the database server using the Database_Private_IP from the output.
+ping Database_Private_IPCopy
+Example ping 10.1.1.8
+
+You should see the following output:
+PING with data transferCopy
+You will see real data here
+
+Click ctrl + c to exit the ping command.
+
+Copy the content of the database.pem file from the lab instanceee server and paste it in the nano editor.
+
+Let's create a name file named database.pem. We will use the following command to create the file.
+
+nano database.pemCopy
+Paste the database.pem file content in the nano editor.
+Press ctrl + o to save the contents in the nano editor. Press ctrl + x to exit the nano editor.
+
+Let's modify the database.pem file permissions.
+chmod 400 database.pemCopy
+The 400 permission means that the file owner has read and write permissions, while no other user can read, write, or execute the file.
+
+SSH to the database server using the Database_Private_IP from the output.
+ssh -i database.pem ubuntu@Database_Private_IPCopy
+Type yes if prompted to continue connecting. Example: ssh -i /root/advanced-vpc/vpc-peering/database.pem ubuntu@10.1.1.8 You will be logged in to the database server.
+
+You should see the following output:
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1051-aws x86_64)Copy
+You are successfully logged in to the database server.
+
+Let's update the database server.
+sudo apt-get update -yCopy
+Let's install mysql server.
+sudo apt-get install mysql-server -yCopy
+Bastion host server is working as expected.
+
+Conclusion
+In this lab, we have learned how to create a VPC peering connection between two VPCs. We have also learned how to verify the VPC peering connectivity between the VPCs. We have also learned how to perform operations on database server using bastion host.
+
+Let's remove the provisioned resources
+
+Open new terminal
+If you are using our DIY approach, change directory to /root/advanced-vpc/Developer
+
+cd /root/advanced-vpc/DeveloperCopy
+If you are using our pre-written approach, change directory to /root/advanced-vpc/vpc-peering
+
+cd /root/advanced-vpc/vpc-peeringCopy
+terraform destroy -auto-approveCopy
+This will destroy all the resources that we have created in this lab.
+
